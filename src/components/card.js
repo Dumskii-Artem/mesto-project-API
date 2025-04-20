@@ -21,7 +21,6 @@ function createCard({
     cardObject,
     deleteFunction,
     onCardClickFunction,
-//    likeCard,
     canDelete,
     isLiked
 }) {

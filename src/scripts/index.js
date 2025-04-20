@@ -15,7 +15,6 @@ import {
 
 let userMe;
 
-// EDIT PROFILE
 const formEditProfile = document.querySelector('[name="edit-profile"]')
 const nameInput = formEditProfile.querySelector('.popup__input_type_name');
 const descriptionInput = formEditProfile.querySelector('.popup__input_type_description');
@@ -27,7 +26,6 @@ const changeAvatarPopup = document.querySelector('.popup_type_change-avatar');
 const changeAvatarForm = changeAvatarPopup.querySelector('form');
 const avatarNewURLInput = changeAvatarPopup.querySelector('[name="new-avatar-url"]');
 
-// PLACES
 const formNewPlace = document.querySelector('[name="new-place"]')
 const cardNameInput = formNewPlace.querySelector('[name="new-place-name"]');
 const cardNewURLInput = formNewPlace.querySelector('[name="new-card-url"]');
@@ -38,10 +36,18 @@ const imagePopupImage = imagePopup.querySelector('.popup__image');
 const imagePopupCaption = imagePopup.querySelector('.popup__caption');
 
 const deleteCardPopup = document.querySelector('.popup_type_delete-card');
-//const confirmCardDeleteButton = document.querySelector('#confirm-card-delete');
 const deleteCardForm = document.querySelector('[name="delete-card"]')
 
 const placesList = document.querySelector('.places__list');
+
+const addButton =  document.querySelector('.profile__add-button');
+const addPopup =   document.querySelector('.popup_type_new-card');
+const addForm = addPopup.querySelector('.popup__form');
+
+const editButton =  document.querySelector('.profile__edit-button');
+const editPopup =   document.querySelector('.popup_type_edit');
+
+const popUps = document.querySelectorAll(".popup");
 
 const validationConfig = {
     formSelector: '.popup__form',
@@ -52,16 +58,6 @@ const validationConfig = {
     errorClass: 'popup__error_visible'
 }
 
-const addButton =  document.querySelector('.profile__add-button');
-const addPopup =   document.querySelector('.popup_type_new-card');
-const addForm = addPopup.querySelector('.popup__form');
-
-
-const editButton =  document.querySelector('.profile__edit-button');
-const editPopup =   document.querySelector('.popup_type_edit');
-//const editProfileForm = document.forms['edit-profile'];
-
-const popUps = document.querySelectorAll(".popup");
 
 function beforeChangeAvatarPopupOpened() {
     avatarNewURLInput.value = 'https://';
@@ -134,29 +130,6 @@ function showProfile() {
     profileImage.style.backgroundImage = `url(${userMe.avatar})`;
 };
 
-// ********** API **********
-// Читаем ждём два ответа и грузим данные из двух источников
-Promise.all([API_getUsersMe(secretConfig), API_getCards(secretConfig)])
-    .then(([user, cardsArray]) => {
-        // копирую наружу -> public userMe
-        userMe = user;
-        showProfile();
-
-        cardsArray.forEach(function (card) {
-                const canDelete = (card.owner._id === userMe._id);
-                const isLiked = card.likes.some(user => user._id === userMe._id);
-                renderCard({
-                    cardObject : card, 
-                    canDelete: canDelete, 
-                    isLiked: isLiked,
-                    method : "append"
-                });
-            })
-        })
-    .catch((err) => {
-        console.log(err);
-    });
-
 function submitDeleteCard(event, cardElement, cardId) {
     event.preventDefault();
 
@@ -184,6 +157,30 @@ function deleteCard(delButton, cardId) {
     openPopup(deleteCardPopup, null);
     deleteCardForm.onsubmit = (evt) => submitDeleteCard(evt, cardElement, cardId);
 }
+
+// Дальше исполняемый  код
+
+// Читаем ждём два ответа и грузим данные из двух источников
+Promise.all([API_getUsersMe(secretConfig), API_getCards(secretConfig)])
+    .then(([user, cardsArray]) => {
+        // копирую наружу -> public userMe
+        userMe = user;
+        showProfile();
+
+        cardsArray.forEach(function (card) {
+                const canDelete = (card.owner._id === userMe._id);
+                const isLiked = card.likes.some(user => user._id === userMe._id);
+                renderCard({
+                    cardObject : card, 
+                    canDelete: canDelete, 
+                    isLiked: isLiked,
+                    method : "append"
+                });
+            })
+        })
+    .catch((err) => {
+        console.log(err);
+    });
 
 profileImage.addEventListener('click', () => openPopup(changeAvatarPopup, beforeChangeAvatarPopupOpened));
     
